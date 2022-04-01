@@ -51,6 +51,14 @@ include_once("helpers/validation.php");
                 echo "</div>";
             #if no validation errors    
             } else {
+                #check if email is already in use
+                $isEmailUsedSql = "SELECT `username` FROM users WHERE email='$email'";
+                $isEmailUsedQuery = mysqli_query($conn,$isEmailUsedSql);
+                $res = mysqli_num_rows($isEmailUsedQuery);
+                if($res > 0) {
+                    echo "<div class='alert alert-danger text-center'>The Email is already used!</div>";
+                } else {
+                
                 #password encryption
                 $pass = password_hash($pass,PASSWORD_DEFAULT);
                 #my sql prepared statement
@@ -62,6 +70,7 @@ include_once("helpers/validation.php");
                     mysqli_stmt_execute($stmt);
                     echo "<div class='alert alert-success text-center'><h5 class=''>You have successfully registered</h5></div>";
                 }
+              }
             }
                
         }    
@@ -275,7 +284,7 @@ include_once("helpers/validation.php");
         session_destroy();
         header("Location: index.php");
     }
-
+    #deletion of images section
     else if(isset($_GET["do"]) && $_GET["do"] === "delete" && is_numeric($_GET["id"]))
     {
         $title = "Home";
